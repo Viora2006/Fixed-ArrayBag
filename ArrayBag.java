@@ -4,7 +4,7 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class ArrayBag<T> implements BagInterface {
+public class ArrayBag<T> implements BagInterface<T> {
    
     private T[] _bag;
     private static final int DEFAULT_CAPACITY = 25;
@@ -88,11 +88,13 @@ public int getFrequencyOf(T entry){
     return counter;
 }
 
-public boolean removeEntry (T entry){
+
+
+    public boolean remove(T entry){
     checkIntegrity();
     int index = getIndexOf(entry);
     T result = removeEntry(index);
-    return entry.equals(result);
+    return result != null && result.equals(entry);
 }
 private int getIndexOf(T entry){
     int where = -1;
@@ -126,12 +128,7 @@ private int getIndexOf(T entry){
         return result;
 }
 
-    public boolean remove(T entry){
-        checkIntegrity();
-        int index = getIndexOf(entry);
-        T result = removeEntry(index);
-        return entry.equals(result);
-    }
+    
 
     public T remove(){
         checkIntegrity();
@@ -156,6 +153,10 @@ private int getIndexOf(T entry){
         }
     }
 
+    public int getCurrentSize(){
+        return _numberOfEntries;
+    }
+
     private void doubleCapacity(){
         int newLength = 2*_bag.length;
         checkCapacity(newLength);
@@ -163,48 +164,128 @@ private int getIndexOf(T entry){
 
     }
 
-    public static class Item {
-        String name;
-        double price;
-        String color;
-        String size;
-        int rfid;
-
-        public Item(String name, double price, String color, String size, int rfid){
-            this.name = name;
-            this.price = price;
-            this.color = color;
-            this.size = size;
-            this.rfid = rfid;
-        }
-
-public String toString (){
-    return name + " | " + price + " | " + color + " | " + size + " | " + rfid ;
-}
-
-
-    }
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        public static Item[] readFile() {
         String file = "store.csv";
-        try(BufferedReader br = new BufferedReader(new FileReader(file))){
-            Item [] StoreArray = new Item[30];
+        Item[] StoreArray = new Item[30];
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             boolean first = true;
             int index = 0;
-            
-            while ((line = br.readLine()) != null && index < StoreArray.length){
-                if (first){
-                    first = false; continue;
+
+            while ((line = br.readLine()) != null && index < StoreArray.length) {
+                if (first) {
+                    first = false;
+                    continue;
                 }
 
-                String [] parts = line.split(",");
+                String[] parts = line.split(",");
+                String name = parts[0].trim();
+                double price = Double.parseDouble(parts[1].trim());
+                String color = parts[2].trim();
+                String size = parts[3].trim();
+                int rfid = Integer.parseInt(parts[4].trim());
+
+                StoreArray[index++] = new Item(name, price, color, size, rfid);
+            }
+             for (int i = 0; i < index; i++){
+                    System.out.println(StoreArray[i]);
+                }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return StoreArray;
+    }
+            
+    public static void printHelp(){
+        System.out.println("Example inputs shown Below:");
+        System.out.println("A 5 1");
+        System.out.println("Add|RFID#|quantity -> adds item with RFID # 5 for a quantity of 1");
+        System.out.println();
+        System.out.println("R 2 1");
+        System.out.println("Removes|RFID#|quantity -> removes item with RFID # 2 for a quantity of 1");
+        System.out.println();
+        System.out.println("C");
+        System.out.println("Combines shopping bag with wishbag");
+        System.out.println();
+        System.out.println("D");
+        System.out.println("Displays all items in shopping bag");
+        System.out.println();
+        System.out.println("F");
+        System.out.println("Displays all items in wishbag");
+
+
+    }
+
+    public static Item findByRfid(Item[] _store, int rfid){
+        for (Item item : _store){
+            if(item!=null && item.getRfid()==rfid){
+                return item;
+                
+                
 
 
             }
-
         }
+        return null;
+    }
+   
+
+    public static void printBagChoicesToAdd(){
+        System.out.println("Which bag would you like to store the item(s) in");
+        System.out.println("S -> shopping bag");
+        System.out.println("W -> wish bag");
+    }
+
+    public static Item findByRfidForBag (BagInterface<Item> bag, int rfid){
+        for (Object obj: bag.toArray()){
+            Item item = (Item) obj;
+            if(item.getRfid()==rfid){
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public static void printBagChoicesToRemove(){
+        System.out.println("Which bag would you like to remove the item(s) from");
+        System.out.println("S -> shopping bag");
+        System.out.println("W -> wish bag");
+    }
+
+     public static boolean verifyInputLength(String[] parts){
+        if (parts.length < 3 || parts == null){
+        System.out.println("Input Invalid, press H for help");  
+        }
+        return true;
+      
+    }
+
+    public static boolean VerifyCommandInput(char command, String [] parts){
+        
+        if(command == 'H' || command == 'C' || command == 'D'|| command == 'F' || command == 'G'){
+            if (parts.length != 1){
+                System.out.println("This feature only takes a one letter input, press H for help");
+                return false;
+            }
+            return true;
+        }
+        if (command == 'A' || command == 'R'){
+            if(parts.length< 3){
+                System.out.println("This feature takes a 3 letter input, press H for help");
+                return false;
+            }
+            return true;
+        }
+        System.out.println("Invalid input, Press H for help"); 
+        return false;
+
+
+
+
     }
 }
 
+
+    
+         
