@@ -20,7 +20,12 @@ public String toString (){
 
 
  public int getRfid(){
-        return rfid;  // encapcsulation to avoid data being misused
+        return rfid;  // encapsulation to avoid data being misused
     }
+public double getPrice(){
+    return price;
+}
     }
 
+// javac *.java
+//java ShoppingProgram 2>&1 | Tee-Object -FilePath .\store_transaction1.txt

@@ -1,4 +1,3 @@
-import java.util.Scanner;
 import java.util.Arrays;
 import java.io.FileReader;
 import java.io.BufferedReader;
@@ -53,7 +52,7 @@ public class ArrayBag<T> implements BagInterface<T> {
    }
     
 
-   public T[] toArray(){
+   public Object[] toArray(){
     @SuppressWarnings("unchecked")
     T[] _result = (T[]) new Object[_numberOfEntries];
 
@@ -253,16 +252,16 @@ private int getIndexOf(T entry){
         System.out.println("W -> wish bag");
     }
 
-     public static boolean verifyInputLength(String[] parts){
-        if (parts.length < 3 || parts == null){
-        System.out.println("Input Invalid, press H for help");  
-        }
-        return true;
-      
-    }
+    
 
     public static boolean VerifyCommandInput(char command, String [] parts){
         
+        if ((parts[0].length() != 1) ){
+            System.out.println("Invalid input, Commands such as A, B, C, etc must be one letter, press H for help");
+            return false;
+
+        }
+
         if(command == 'H' || command == 'C' || command == 'D'|| command == 'F' || command == 'G'){
             if (parts.length != 1){
                 System.out.println("This feature only takes a one letter input, press H for help");
@@ -271,8 +270,17 @@ private int getIndexOf(T entry){
             return true;
         }
         if (command == 'A' || command == 'R'){
-            if(parts.length< 3){
+            if(parts.length!= 3){
                 System.out.println("This feature takes a 3 letter input, press H for help");
+                return false;
+            }
+
+            try {
+                Integer.parseInt(parts[1]);
+                Integer.parseInt(parts[2]);
+            }
+            catch (NumberFormatException e) {
+                System.out.println("RFID and quantity must be integers.");
                 return false;
             }
             return true;
@@ -284,6 +292,29 @@ private int getIndexOf(T entry){
 
 
     }
+
+    public static double addPrices(BagInterface<Item> bag){
+       double price = 0.0;  
+        if (bag.isEmpty()){
+            return price;
+        }
+        
+        for (Object obj: bag.toArray()){
+           Item item = (Item) obj;
+          if(item!= null) {price +=item.getPrice();}
+        }
+        return Math.round(price * 100.0) / 100.0;
+
+    }
+
+    public static void PrintBagAndPrice(BagInterface<Item> bag){
+    for (Object obj: bag.toArray() ){  
+         Item item = (Item) obj; // cast obj as Item so it can gain toString method
+        if (item != null){System.out.println(item);}
+        }
+    }
+
+
 }
 
 
