@@ -14,7 +14,7 @@
         }
 
 public String toString (){
-    return name + " | " + price + " | " + color + " | " + size + " | " + rfid ;
+    return name + " | " + price + " | " + color + " | " + size + " | " + rfid  ;
 }
 
 
@@ -27,5 +27,3 @@ public double getPrice(){
 }
     }
 
-// javac *.java
-//java ShoppingProgram 2>&1 | Tee-Object -FilePath .\store_transaction1.txt
